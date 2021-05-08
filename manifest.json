@@ -26,8 +26,10 @@
     ],
     "permissions":[
         "tabs",
+        "notifications",
         "https://meet.google.com/*",
         "storage","identity", "identity.email",
-        "http://192.168.137.67:8000/*"
+        "http://192.168.137.67:8000/*",
+        "http://localhost:3000/*"
     ]
 }

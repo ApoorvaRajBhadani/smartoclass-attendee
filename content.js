@@ -1,5 +1,10 @@
 chrome.runtime.sendMessage({todo:"showPageAction"});
-
+chrome.runtime.onMessage.addListener(function (response, sendResponse) {
+  console.log(response);
+  $("#injected").css({
+    display: 'block'
+  });
+});
 $('body').append(`
   <div id="injected">
       <h3 id="areyoupres">Are you present?</h3>
@@ -18,7 +23,7 @@ $('#injected').css({
   top: '50%',
   transform: 'translate(-50%, -50%)',
   zIndex: '100',
-  //display: 'none',
+  display: 'none',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
@@ -43,5 +48,6 @@ $("#btnPresent").click(function(){
   $("#injected").css({
     display: 'none'
   });
-  alert("Marked Present");
 });
+
+

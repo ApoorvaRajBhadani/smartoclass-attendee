@@ -6,10 +6,34 @@ function findMeetId(url){
     if(str[0]=="_") return def;
     return str;
 }
+const publicVapidKey = 'BPq4A4ShxxzqxjjmWyPW7hHwgi9ihdOyGegB87hhAg1OQjcSM1MKpQZKx4nRyTB_3T5oleuGyIUIA9RVuPxaABA';
+function urlBase64ToUint8Array(base64String) {
+  var padding = '='.repeat((4 - base64String.length % 4) % 4);
+  var base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+
+  var rawData = window.atob(base64);
+  var outputArray = new Uint8Array(rawData.length);
+
+  for (var i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 chrome.identity.getProfileUserInfo(function(info) { 
     email = info.email; 
     chrome.storage.sync.set({'email':email});
 });
+navigator.serviceWorker.onmessage = function(event) {
+     var data = event.data;
+    // if (data.command == "broadcastOnRequest") {
+    //     console.log("Broadcasted message from the ServiceWorker : ", data.message);
+    // }
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        chrome.tabs.sendMessage(tabs[0].id, {action: data.message});  
+    });
+};
 chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
     if(request.todo == "showPageAction"){
         chrome.tabs.query({active:true,currentWindow:true},function(tabs){
@@ -17,6 +41,41 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
             var url = tabs[0].url;
             var meetid = findMeetId(url);
             chrome.storage.sync.set({'meetId':meetid});
+            if ('serviceWorker' in navigator) {
+                console.log('Registering service worker');
+                run().catch(error => console.error(error));
+              }
+              
+              async function run() {
+                console.log('Registering service worker');
+                const registration = await navigator.serviceWorker.
+                  register('worker.js');
+                console.log('Registered service worker');
+              
+                console.log('Registering push');
+                const subscription = await registration.pushManager.
+                  subscribe({
+                    userVisibleOnly: true,
+                    // The `urlBase64ToUint8Array()` function is the same as in
+                    // https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
+                    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+                  });
+                console.log('Registered push');
+              
+                var myemail;
+                chrome.identity.getProfileUserInfo(function(info) { 
+                    myemail = info.email;
+                    console.log('Sending push');
+                    fetch('http://localhost:3000/subscribe', {
+                      method: 'POST',
+                      body: JSON.stringify(subscription),
+                      headers: {
+                        'content-type': 'application/json'
+                      }
+                    });
+                    console.log('Subscribed');
+                });
+              }
         });
     }
 });
