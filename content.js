@@ -2,24 +2,46 @@ chrome.runtime.sendMessage({todo:"showPageAction"});
 
 $('body').append(`
   <div id="injected">
-      <h3>Are you present</h3>
-      <input type="submit" value="Yes" id="btnPresent">
-      <br>
-      <br>
+      <h3 id="areyoupres">Are you present?</h3>
+      <input class="innerele" type="submit" value="Yes" id="btnPresent">
       <b>Time Left: </b>
       <b id="timer"> </b>
   </div>
 `);
 $('#injected').css({
+  'border-style': 'solid',
+  padding: '15px 15px 15px 15px',
   width: '300px',
   height: '150px',
-  position: 'absolute',
-  //right: '18px',
-  //bottom: '200px',
+  position: 'fixed',
+  left: '50%',
+  top: '50%',
+  transform: 'translate(-50%, -50%)',
   zIndex: '100',
-  display: 'none',
-  //flexDirection: 'column',
-  //alignItems: 'center',
-  //justifyContent: 'center',
-  background: 'rgb(221,221,221)',
+  //display: 'none',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'rgb(250,250,250)',
+});
+$("#areyoupres").css({
+  position: 'absolute',
+  left: '50%',
+  top: '30%',
+  transform: 'translate(-50%, -50%)',
+});
+$("#btnPresent").css({
+  position: 'absolute',
+  left: '50%',
+  top: '60%',
+  transform: 'translate(-50%, -50%)',
+});
+$("#btnPresent").click(function(){
+  //find email meetId attendanceId
+  //make post request
+  //action on response
+  $("#injected").css({
+    display: 'none'
+  });
+  alert("Marked Present");
 });

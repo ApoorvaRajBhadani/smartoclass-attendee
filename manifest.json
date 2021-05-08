@@ -27,6 +27,7 @@
     "permissions":[
         "tabs",
         "https://meet.google.com/*",
-        "storage","identity", "identity.email"
+        "storage","identity", "identity.email",
+        "http://192.168.137.67:8000/*"
     ]
 }
