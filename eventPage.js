@@ -73,6 +73,20 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
                         'content-type': 'application/json'
                       }
                     });
+                    // const mysubscription = {
+                    //     email: myemail,
+                    //     meet_link: "https://meet.google.com/"+meetid,
+                    //     token1: subscription.endpoint,
+                    //     token2: subscription.keys.p256dh,
+                    //     token3: subscription.keys.auth
+                    // }
+                    // fetch('http://192.168.137.67:8000/api/subscribe', {
+                    //   method: 'POST',
+                    //   body: JSON.stringify(mysubscription),
+                    //   headers: {
+                    //     'content-type': 'application/json'
+                    //   }
+                    // });
                     console.log('Subscribed');
                 });
               }
