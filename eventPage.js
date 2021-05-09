@@ -35,7 +35,28 @@ navigator.serviceWorker.onmessage = function(event) {
     });
 };
 chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
-    if(request.todo == "showPageAction"){
+    if(request.todo == "markAttendance"){
+        console.log(request);
+        fetch('http://192.168.137.67:8000/api/attendance-response', {
+            method: 'POST',
+            body: JSON.stringify({
+                email: request.email,
+                meet_link: request.meet_link
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            },
+        })
+        // .then(function(response){
+        //     console.log(response.status);
+        //     return response.json();
+        // })
+        // .then(function(json){
+        //     //action on response
+        //     console.log(json);
+        // });
+    }
+    else if(request.todo == "showPageAction"){
         chrome.tabs.query({active:true,currentWindow:true},function(tabs){
             chrome.pageAction.show(tabs[0].id);
             var url = tabs[0].url;
@@ -66,27 +87,28 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
                 chrome.identity.getProfileUserInfo(function(info) { 
                     myemail = info.email;
                     console.log('Sending push');
-                    fetch('http://localhost:3000/subscribe', {
-                      method: 'POST',
-                      body: JSON.stringify(subscription),
-                      headers: {
-                        'content-type': 'application/json'
-                      }
-                    });
-                    // const mysubscription = {
-                    //     email: myemail,
-                    //     meet_link: "https://meet.google.com/"+meetid,
-                    //     token1: subscription.endpoint,
-                    //     token2: subscription.keys.p256dh,
-                    //     token3: subscription.keys.auth
-                    // }
-                    // fetch('http://192.168.137.67:8000/api/subscribe', {
+                    // fetch('http://localhost:3000/subscribe', {
                     //   method: 'POST',
-                    //   body: JSON.stringify(mysubscription),
+                    //   body: JSON.stringify(subscription),
                     //   headers: {
                     //     'content-type': 'application/json'
                     //   }
                     // });
+                    const mysubscription = {
+                        email: myemail,
+                        meet_link: "https://meet.google.com/"+meetid,
+                        token1: subscription.endpoint,
+                        token2: subscription.toJSON().keys.p256dh,
+                        token3: subscription.toJSON().keys.auth
+                    }
+                    console.log(mysubscription);
+                    fetch('http://192.168.137.67:8000/api/subscribe', {
+                      method: 'POST',
+                      body: JSON.stringify(mysubscription),
+                      headers: {
+                        'content-type': 'application/json'
+                      }
+                    });
                     console.log('Subscribed');
                 });
               }

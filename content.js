@@ -4,7 +4,7 @@ chrome.runtime.onMessage.addListener(function (response, sendResponse) {
   $("#injected").css({
     display: 'block'
   });
-  var timeleft = 120;
+  var timeleft = 10;
   $("#timer").text(timeleft+" seconds");
   var downloadTimer = setInterval(function(){
     if(timeleft <= 0){
@@ -61,37 +61,16 @@ $("#btnPresent").css({
 //I am present button clicked
 $("#btnPresent").click(function(){
   //find email meetId attendanceId
-  // chrome.storage.sync.get(['meetId','email'],function(data){
-  //     var email = data.email;
-  //     var meetid = data.meetId;
-  //     //make post request
-  //     if(meetid!="none"){
-  //       fetch('http://192.168.137.67:8000/api/attendance-response', {
-  //           method: 'POST',
-  //           body: JSON.stringify({
-  //               email: email,
-  //               meet_link: "https://meet.google.com/"+meetid,
-  //           }),
-  //           headers: {
-  //               'Content-type': 'application/json',
-  //           },
-  //       })
-  //       .then(function(response){
-  //           console.log(response.status);
-  //           return response.json();
-  //       })
-  //       .then(function(json){
-  //           //action on response
-  //           $("#injected").css({
-  //             display: 'none'
-  //           });
-  //       });
-  //     }
-      //});
-      //action on response
-      $("#injected").css({
-        display: 'none'
+  chrome.storage.sync.get(['meetId','email'],function(data){
+      var email = data.email;
+      var meetid = data.meetId;
+      //make post request
+      if(meetid!="none"){
+        chrome.runtime.sendMessage({todo:"markAttendance",email:email,meet_link:"https://meet.google.com/"+meetid });
+        //action on response
+          $("#injected").css({
+           display: 'none'
+          });
+      }
       });
 });
-
-
